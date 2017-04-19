@@ -1,0 +1,14 @@
+{
+    "name": "jacerider/terminus_remote",
+    "type": "project",
+    "require": {
+        "drush/drush": "^8.1",
+        "pantheon-systems/terminus": "^1.2"
+    },
+    "authors": [
+        {
+            "name": "Cyle Carlson",
+            "email": "jacerider@gmail.com"
+        }
+    ]
+}
