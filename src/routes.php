@@ -27,6 +27,8 @@ $app->get('/test', function (Request $request, Response $response, $args) {
 
   // Authenticate
   $machine_token = $this->get('pantheon')['machine_token'];
+  $return['machine_token'] = $machine_token;
+
   $cmd = 'terminus auth:login';
   if ($machine_token) {
     $cmd .= ' --machine-token=' . $machine_token;

@@ -19,6 +19,6 @@ return [
     ],
   ],
   'pantheon' => [
-    'machine_token' => getenv('PANTHEON_MACHINE_TOKEN') ?: 'boom',
+    'machine_token' => getenv('PANTHEON_MACHINE_TOKEN') ?: '',
   ]
 ];
