@@ -63,8 +63,8 @@ $app->post('/create', function (Request $request, Response $response) {
     // $cmd = 'sh terminus site:create ' . $machine_name . ' "' . $label . '" "Drupal 8" --org="' . $organization . '" > "' . $log . '" 2>&1 & echo $!';
 
     // exec($cmd);
-    $cmd = 'terminus aliases';
-    // $cmd = 'terminus site:create ' . $machine_name . ' "' . $label . '" "Drupal 8" --org="' . $organization . '"';
+    // $cmd = 'terminus aliases';
+    $cmd = 'terminus site:create ' . $machine_name . ' "' . $label . '" "Drupal 8" --org="' . $organization . '"';
     $log = $this->get('pantheon')['log_path'] . $machine_name . '.txt';
     $pid = $this->get('pantheon')['log_path'] . $machine_name . '.pid.txt';
     $command = 'sh -c ' . escapeshellarg(sprintf("%s > %s 2>&1 & echo $! >> %s", $cmd, $log, $pid));
