@@ -90,7 +90,6 @@ $app->get('/create/status/{machine_name}', function (Request $request, Response 
       $return['error'] = terminusError(explode("\n", $data));
       $return['status'] = empty($return['error']);
       $return['data'] = $data;
-      ksm($data);
       // unlink($log);
       // unlink($pid);
     }
