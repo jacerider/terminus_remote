@@ -20,5 +20,6 @@ return [
   ],
   'pantheon' => [
     'machine_token' => getenv('PANTHEON_MACHINE_TOKEN') ?: '',
+    'log_path' => __DIR__ . '/../logs/',
   ]
 ];

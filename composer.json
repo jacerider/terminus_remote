@@ -6,7 +6,8 @@
         "pantheon-systems/terminus": "~1.2",
         "slim/slim": "^3.8",
         "monolog/monolog": "^1.22",
-        "slim/twig-view": "^2.2"
+        "slim/twig-view": "^2.2",
+        "cocur/background-process": "^0.7.0"
     },
     "authors": [
         {
