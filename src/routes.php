@@ -87,40 +87,29 @@ $app->get('/create/status/{machine_name}', function (Request $request, Response 
   if (file_exists($log)) {
     $data = file_get_contents($log);
     if (!empty($data)) {
-      $return['error'] = terminusError(explode("\n", $data));
-      $return['status'] = empty($return['error']);
+      $return['message'] = 'Deploying site...';
+      $return['error'] = messageFind(explode("\n", $data));
       $return['data'] = $data;
-      // unlink($log);
-      // unlink($pid);
+      if (!$return['error']) {
+        $success = messageFind(explode("\n", $data), '[notice] Deployed CMS');
+        $return['message'] = 'Success';
+        $return['status'] = 1;
+        unlink($log);
+        unlink($pid);
+      }
     }
   }
   return $response->withJson($return);
 })->setName('create_status');
 
 /**
- * @author Micheal Mouner
- * @param String $commandJob
- * @return Integer $pid
- */
-function psExec($commandJob, $log = '/dev/null'){
-  $command = 'sh ' . $commandJob . ' > ' . $log . ' 2>&1 & echo $!';
-  exec($command, $op);
-  $pid = (int) $op[0];
-  if ($pid != "") {
-    return $pid;
-  }
-  return false;
-}
-
-
-/**
  * Find output error.
  */
-function terminusError($return) {
+function messageFind($return, $find = '[error]') {
   $error = NULL;
   foreach ($return as $message) {
     $message = trim($message);
-    if (substr($message, 0, 7) === '[error]') {
+    if (substr($message, 0, count($find)) === $find) {
       $error = trim(substr($message, 7));
     }
   }
