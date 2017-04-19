@@ -18,4 +18,7 @@ return [
       'level' => \Monolog\Logger::DEBUG,
     ],
   ],
+  'pantheon' => [
+    'machine_token' => getenv('PANTHEON_MACHINE_TOKEN') ?: 'boom',
+  ]
 ];

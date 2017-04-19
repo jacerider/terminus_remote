@@ -23,7 +23,19 @@ $app->get('/name/{name}', function (Request $request, Response $response, $args)
 
 
 $app->get('/test', function (Request $request, Response $response, $args) {
-  exec('terminus help', $output);
-  // return nl2br(implode("\n", $output));
-  return $response->withJson($output);
+  $return = [];
+
+  // Authenticate
+  $machine_token = $this->get('pantheon')['machine_token'];
+  $cmd = 'terminus auth:login';
+  if ($machine_token) {
+    $cmd .= '--machine-token=' . $machine_token;
+  }
+  exec($cmd, $return['auth:login']['message'], $return['auth:login']['status']);
+
+  if ($return['auth:login']['status']) {
+    exec('terminus site:list', $return['site:list']['message'], $return['site:list']['status']);
+  }
+
+  return $response->withJson($return);
 })->setName('home');
