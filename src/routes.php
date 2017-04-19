@@ -58,15 +58,11 @@ $app->post('/create', function (Request $request, Response $response) {
 
     $cmd = 'terminus site:create ' . $machine_name . ' "' . $label . '" "Drupal 8" --org="' . $organization . '"';
     $log = $this->get('pantheon')['log_path'] . $machine_name . '.txt';
-    $pid = $this->get('pantheon')['log_path'] . $machine_name . '.pid.txt';
-    $command = 'sh -c ' . escapeshellarg(sprintf("%s > %s 2>&1 & echo $! >> %s", $cmd, $log, $pid));
     $this->logger->info($cmd);
 
     $process = new BackgroundProcess($cmd);
     $process->run($log);
 
-    // exec($command);
-    // die;
     $return['status'] = 1;
   }
 
@@ -83,19 +79,23 @@ $app->get('/create/status/{machine_name}', function (Request $request, Response 
   $machine_name = $args['machine_name'];
   $return['machine_name'] = $machine_name;
   $log = $this->get('pantheon')['log_path'] . $machine_name . '.txt';
-  $pid = $this->get('pantheon')['log_path'] . $machine_name . '.pid.txt';
   if (file_exists($log)) {
     $data = file_get_contents($log);
+    $messages = explode("\n", $data);
     if (!empty($data)) {
       $return['message'] = 'Deploying site...';
-      $return['error'] = messageFind(explode("\n", $data));
+      $return['error'] = messageFind($messages);
       $return['data'] = $data;
-      if (!$return['error']) {
-        $success = messageFind(explode("\n", $data), '[notice] Deployed CMS');
-        $return['message'] = 'Success';
-        $return['status'] = 1;
+      if ($return['error']) {
         unlink($log);
-        unlink($pid);
+      }
+      else {
+        $success = messageFind($messages, '[notice] Deployed CMS');
+        if ($success) {
+          $return['message'] = $success;
+          $return['status'] = 1;
+          unlink($log);
+        }
       }
     }
   }
@@ -109,8 +109,8 @@ function messageFind($return, $find = '[error]') {
   $error = NULL;
   foreach ($return as $message) {
     $message = trim($message);
-    if (substr($message, 0, count($find)) === $find) {
-      $error = trim(substr($message, 7));
+    if (substr($message, 0, strlen($find)) === $find) {
+      $error = trim(substr($message, strlen($find)));
     }
   }
   return $error;
