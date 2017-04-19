@@ -2,8 +2,9 @@
     "name": "jacerider/terminus_remote",
     "type": "project",
     "require": {
-        "drush/drush": "^8.1",
-        "pantheon-systems/terminus": "^1.2"
+        "php": "~7.0.0",
+        "drush/drush": "~8.1",
+        "pantheon-systems/terminus": "~1.2"
     },
     "authors": [
         {
