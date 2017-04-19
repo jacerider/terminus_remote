@@ -72,7 +72,6 @@ $app->post('/create', function (Request $request, Response $response) {
 
     $process = new BackgroundProcess($cmd);
     $process->run($log);
-    $process->stop();
 
     // exec($command);
     // die;
