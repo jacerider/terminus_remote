@@ -35,7 +35,9 @@ $app->get('/test', function (Request $request, Response $response, $args) {
   }
   exec($cmd, $return['auth:login']['message'], $return['auth:login']['status']);
 
-  if ($return['auth:login']['status']) {
+  $authenticated = exec('terminus auth:whoami');
+
+  if ($authenticated) {
     exec('terminus site:list', $return['site:list']['message'], $return['site:list']['status']);
   }
 
