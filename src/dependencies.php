@@ -13,7 +13,8 @@ $container = $app->getContainer();
 $container['renderer'] = function ($c) {
   $settings = $c->get('settings');
   $view = new Twig($settings['renderer']['template_path'], [
-    'cache' => $settings['displayErrorDetails'] ? false : $settings['renderer']['template_path'],
+    'debug' => $settings['displayErrorDetails'],
+    'cache' => $settings['renderer']['template_path'],
   ]);
 
   // Instantiate and add Slim specific extension
