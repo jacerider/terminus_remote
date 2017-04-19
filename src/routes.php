@@ -55,15 +55,7 @@ $app->post('/create', function (Request $request, Response $response) {
     $machine_name = filter_var($data['machine_name'], FILTER_SANITIZE_STRING);
     $label = filter_var($data['label'], FILTER_SANITIZE_STRING);
     $organization = filter_var($data['organization'], FILTER_SANITIZE_STRING);
-    // $log = $this->get('pantheon')['log_path'] . $machine_name . '.txt';
 
-    // $cmd = 'sh -c "' . escapeshellarg('terminus site:create ' . $machine_name . ' "' . $label . '" "Drupal 8" --org="' . $organization . '"') . '" | at now';;
-
-    // $cmd = 'sh sleep 10; terminus whoami > "' . $log . '" 2>&1 & echo $!';
-    // $cmd = 'sh terminus site:create ' . $machine_name . ' "' . $label . '" "Drupal 8" --org="' . $organization . '" > "' . $log . '" 2>&1 & echo $!';
-
-    // exec($cmd);
-    // $cmd = 'terminus aliases';
     $cmd = 'terminus site:create ' . $machine_name . ' "' . $label . '" "Drupal 8" --org="' . $organization . '"';
     $log = $this->get('pantheon')['log_path'] . $machine_name . '.txt';
     $pid = $this->get('pantheon')['log_path'] . $machine_name . '.pid.txt';
@@ -99,8 +91,8 @@ $app->get('/create/status/{machine_name}', function (Request $request, Response 
       $return['status'] = empty($return['error']);
       $return['data'] = $data;
       ksm($data);
-      unlink($log);
-      unlink($pid);
+      // unlink($log);
+      // unlink($pid);
     }
   }
   return $response->withJson($return);
