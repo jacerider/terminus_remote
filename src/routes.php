@@ -29,7 +29,7 @@ $app->get('/test', function (Request $request, Response $response, $args) {
   $machine_token = $this->get('pantheon')['machine_token'];
   $cmd = 'terminus auth:login';
   if ($machine_token) {
-    $cmd .= '--machine-token=' . $machine_token;
+    $cmd .= ' --machine-token=' . $machine_token;
   }
   exec($cmd, $return['auth:login']['message'], $return['auth:login']['status']);
 
