@@ -30,7 +30,8 @@
         "start": "php -S 0.0.0.0:8080 -t public public/index.php",
         "test": "phpunit",
         "compile": [
-          "chmod -R 777 logs/"
+          "chmod -R 777 logs/",
+          "chmod u+x commands/test.sh"
         ]
     }
 }

@@ -112,8 +112,8 @@ $app->get('/install/{machine_name}', function (Request $request, Response $respo
   $return = [];
   $return['message'] = 'Starting site installation...';
 
-  $cmd = 'terminus drush -n "' . $machine_name . '.dev"  -- site-install -y';
-  $log = $this->get('pantheon')['log_path'] . $machine_name . '.txt';
+  $cmd = 'terminus drush "' . $machine_name . '.dev"  -- site-install --site-name="My Sweetness" -y -v';
+  $log = $this->get('pantheon')['log_path'] . $machine_name . '.install.txt';
 
   $process = new BackgroundProcess($cmd);
   $process->run($log);
@@ -131,7 +131,7 @@ $app->get('/install/{machine_name}/status', function (Request $request, Response
   $return['status'] = 0;
 
   $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
-  $log = $this->get('pantheon')['log_path'] . $machine_name . '.txt';
+  $log = $this->get('pantheon')['log_path'] . $machine_name . '.install.txt';
   if (file_exists($log)) {
     $data = file_get_contents($log);
     $messages = explode("\n", $data);
@@ -140,14 +140,14 @@ $app->get('/install/{machine_name}/status', function (Request $request, Response
       $return['error'] = messageFind($messages);
       $return['data'] = $data;
       if ($return['error']) {
-        unlink($log);
+        // unlink($log);
       }
       else {
         $success = messageFind($messages, 'Installation complete');
         if ($success) {
           $return['message'] = $success;
           $return['status'] = 1;
-          unlink($log);
+          // unlink($log);
         }
       }
     }
@@ -164,6 +164,20 @@ $app->get('/url/{machine_name}', function (Request $request, Response $response,
 
   $cmd = 'terminus env:view --print ' . $machine_name . '.dev';
   $return['url'] = exec($cmd);
+  $return['status'] = $return['url'] ? TRUE : FALSE;
+
+  return $response->withJson($return);
+})->setName('url');
+
+/**
+ * TEST
+ */
+$app->get('/test/{machine_name}', function (Request $request, Response $response, $args) {
+  $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
+  $return = [];
+
+  $cmd = __DIR__ . '/../commands/test.sh';
+  return shell_exec($cmd);
   $return['status'] = $return['url'] ? TRUE : FALSE;
 
   return $response->withJson($return);
