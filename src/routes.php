@@ -49,6 +49,7 @@ $app->get('/authenticate', function (Request $request, Response $response, $args
 $app->post('/create', function (Request $request, Response $response) {
   $return = [];
   $return['status'] = 0;
+  $return['message'] = 'Starting site creation...';
 
   $data = $request->getParsedBody();
 
@@ -109,6 +110,7 @@ $app->get('/create/{machine_name}/status', function (Request $request, Response 
 $app->get('/install/{machine_name}', function (Request $request, Response $response, $args) {
   $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
   $return = [];
+  $return['message'] = 'Starting site installation...';
 
   $cmd = 'terminus drush -n "' . $machine_name . '.dev"  -- site-install -y';
   $log = $this->get('pantheon')['log_path'] . $machine_name . '.txt';
