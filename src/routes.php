@@ -39,6 +39,7 @@ $app->get('/authenticate', function (Request $request, Response $response, $args
 
   $return['whoami'] = exec('terminus auth:whoami');
   $return['status'] = $return['whoami'] ? TRUE : FALSE;
+
   return $response->withJson($return);
 })->setName('authenticate');
 
@@ -70,27 +71,27 @@ $app->post('/create', function (Request $request, Response $response) {
 })->setName('create');
 
 /**
- * Create site route.
+ * Create site status.
  */
-$app->get('/create/status/{machine_name}', function (Request $request, Response $response, $args) {
+$app->get('/create/{machine_name}/status', function (Request $request, Response $response, $args) {
   $return = [];
   $return['status'] = 0;
 
-  $machine_name = $args['machine_name'];
-  $return['machine_name'] = $machine_name;
+  $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
   $log = $this->get('pantheon')['log_path'] . $machine_name . '.txt';
   if (file_exists($log)) {
     $data = file_get_contents($log);
     $messages = explode("\n", $data);
     if (!empty($data)) {
-      $return['message'] = 'Deploying site...';
+      $message = messageFind($messages, '[notice]');
+      $return['message'] = '<h2>' . $message . '</h2><p><em>So much is happening behind this white background...</em></p>';
       $return['error'] = messageFind($messages);
       $return['data'] = $data;
       if ($return['error']) {
         unlink($log);
       }
       else {
-        $success = messageFind($messages, '[notice] Deployed CMS');
+        $success = messageFind($messages, '[notice] Deployed');
         if ($success) {
           $return['message'] = $success;
           $return['status'] = 1;
@@ -103,15 +104,79 @@ $app->get('/create/status/{machine_name}', function (Request $request, Response 
 })->setName('create_status');
 
 /**
+ * Install site.
+ */
+$app->get('/install/{machine_name}', function (Request $request, Response $response, $args) {
+  $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
+  $return = [];
+
+  $cmd = 'terminus drush -n "' . $machine_name . '.dev"  -- site-install -y';
+  $log = $this->get('pantheon')['log_path'] . $machine_name . '.txt';
+
+  $process = new BackgroundProcess($cmd);
+  $process->run($log);
+
+  $return['status'] = 1;
+
+  return $response->withJson($return);
+})->setName('install');
+
+/**
+ * Install site status.
+ */
+$app->get('/install/{machine_name}/status', function (Request $request, Response $response, $args) {
+  $return = [];
+  $return['status'] = 0;
+
+  $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
+  $log = $this->get('pantheon')['log_path'] . $machine_name . '.txt';
+  if (file_exists($log)) {
+    $data = file_get_contents($log);
+    $messages = explode("\n", $data);
+    $return['message'] = '<h2>Installing your site...</h2><p><em>So much is happening behind this white background...</em></p>';
+    if (!empty($data)) {
+      $return['error'] = messageFind($messages);
+      $return['data'] = $data;
+      if ($return['error']) {
+        unlink($log);
+      }
+      else {
+        $success = messageFind($messages, 'Installation complete');
+        if ($success) {
+          $return['message'] = $success;
+          $return['status'] = 1;
+          unlink($log);
+        }
+      }
+    }
+  }
+  return $response->withJson($return);
+})->setName('install_status');
+
+/**
+ * Create site route.
+ */
+$app->get('/url/{machine_name}', function (Request $request, Response $response, $args) {
+  $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
+  $return = [];
+
+  $cmd = 'terminus env:view --print ' . $machine_name . '.dev';
+  $return['url'] = exec($cmd);
+  $return['status'] = $return['url'] ? TRUE : FALSE;
+
+  return $response->withJson($return);
+})->setName('url');
+
+/**
  * Find output error.
  */
 function messageFind($return, $find = '[error]') {
-  $error = NULL;
+  $results = [];
   foreach ($return as $message) {
     $message = trim($message);
-    if (substr($message, 0, strlen($find)) === $find) {
-      $error = trim(substr($message, strlen($find)));
+    if (strtolower(substr($message, 0, strlen($find))) === strtolower($find)) {
+      $results[] = trim(substr($message, strlen($find)));
     }
   }
-  return $error;
+  return !empty($results) ? end($results) : NULL;
 }
