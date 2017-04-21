@@ -200,6 +200,14 @@ $app->get('/test/{machine_name}', function (Request $request, Response $response
   $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
   $return = [];
 
+  // Authenticate
+  $machine_token = $this->get('pantheon')['machine_token'];
+  $cmd = 'terminus auth:login';
+  if ($machine_token) {
+    $cmd .= ' --machine-token=' . $machine_token;
+  }
+  exec($cmd);
+
   $cmd = __DIR__ . '/../commands/test.sh ' . $machine_name;
   $log = $this->get('pantheon')['log_path'] . $machine_name . '.test.log';
   $process = new BackgroundProcess($cmd);
