@@ -245,15 +245,19 @@ function authenticate($machine_token) {
   if ($machine_token) {
     $key = __DIR__ . '/../.ssh/id_rsa.pub';
     if (!file_exists($key)) {
-      $existing = unserialize(shell_exec('terminus ssh-key:list --format="php"'));
-      // $existing = json_decode(shell_exec('terminus ssh-key:list --format="json'), TRUE);
-      foreach ($existing as $data) {
-        if ($data['comment'] == 'terminus-remote') {
-          exec('terminus ssh-key:remove ' . $data['id']);
+      $existing = shell_exec('terminus ssh-key:list --format="php"');
+      if ($existing) {
+        $existing = unserialize($existing);
+        if (is_array($existing)) {
+          foreach ($existing as $data) {
+            if ($data['comment'] == 'terminus-remote') {
+              exec('terminus ssh-key:remove ' . $data['id']);
+            }
+          }
+          exec('ssh-keygen -t rsa -N "" -C "terminus-remote" -f "/app/.ssh/id_rsa"');
+          exec('terminus ssh-key:add "/app/.ssh/id_rsa.pub"');
         }
       }
-      exec('ssh-keygen -t rsa -N "" -C "terminus-remote" -f "/app/.ssh/id_rsa"');
-      exec('terminus ssh-key:add "/app/.ssh/id_rsa.pub"');
     }
   }
 }
