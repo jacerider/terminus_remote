@@ -1,3 +1,5 @@
+#!/bin/bash
+
 MACHINE_NAME=$1
 LABEL=$2
 UPSTREAM_ID=$3

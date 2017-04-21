@@ -49,7 +49,6 @@ $app->get('/authenticate', function (Request $request, Response $response, $args
 $app->post('/create', function (Request $request, Response $response) {
   $return = [];
   $return['status'] = 0;
-  $return['message'] = 'Starting site creation...';
 
   $data = $request->getParsedBody();
 
@@ -67,7 +66,11 @@ $app->post('/create', function (Request $request, Response $response) {
     $process = new BackgroundProcess($cmd);
     $process->run($log);
 
+    $return['message'] = '<h2>Starting site creation...</h2><p><em>Please wait.</em></p>';
     $return['status'] = 1;
+  }
+  else {
+    $return['error'] = 'Create process failed. Missing parameters.';
   }
 
   return $response->withJson($return);
@@ -86,7 +89,7 @@ $app->get('/create/{machine_name}/status', function (Request $request, Response 
     $data = file_get_contents($log);
     $messages = explode("\n", $data);
     if (!empty($data)) {
-      $message = messageFind($messages, '[notice]');
+      $message = messageFind($messages, '[notice]') ?: 'Starting Install';
       $return['message'] = '<h2>' . $message . '</h2><p><em>So much is happening behind this white background... we could show you... <strong>but we would have to kill you.</strong></em></p>';
       $return['error'] = messageFind($messages);
       $return['data'] = $data;

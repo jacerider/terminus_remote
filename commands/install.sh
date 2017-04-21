@@ -1,3 +1,5 @@
+#!/bin/bash
+
 MACHINE_NAME=$1
 
 # Script location
@@ -18,7 +20,7 @@ PID=$!
 
 # Fired on finish.
 FINISH() {
-  rm $LOG
+  # rm $LOG
   kill $PID 2> /dev/null
 }
 
