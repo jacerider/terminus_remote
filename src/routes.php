@@ -53,14 +53,15 @@ $app->post('/create', function (Request $request, Response $response) {
 
   $data = $request->getParsedBody();
 
-  if (isset($data['machine_name']) && isset($data['label']) && isset($data['organization'])) {
+  if (isset($data['machine_name']) && isset($data['label']) && isset($data['organization']) && isset($data['upstream_id'])) {
     $machine_name = filter_var($data['machine_name'], FILTER_SANITIZE_STRING);
     $label = filter_var($data['label'], FILTER_SANITIZE_STRING);
     $organization = filter_var($data['organization'], FILTER_SANITIZE_STRING);
+    $upstream_id = filter_var($data['upstream_id'], FILTER_SANITIZE_STRING);
 
     // $cmd = 'terminus site:create ' . $machine_name . ' "' . $label . '" "Drupal 8" --org="' . $organization . '"';
-    $cmd = __DIR__ . "/../commands/create.sh $machine_name '$label' '$organization'";
-    $log = $this->get('pantheon')['log_path'] . $machine_name . '.create.txt';
+    $cmd = __DIR__ . "/../commands/create.sh $machine_name '$label' '$upstream_id' '$organization'";
+    $log = $this->get('pantheon')['log_path'] . $machine_name . '.create.log';
     $this->logger->info($cmd);
 
     $process = new BackgroundProcess($cmd);
@@ -80,7 +81,7 @@ $app->get('/create/{machine_name}/status', function (Request $request, Response 
   $return['status'] = 0;
 
   $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
-  $log = $this->get('pantheon')['log_path'] . $machine_name . '.create.txt';
+  $log = $this->get('pantheon')['log_path'] . $machine_name . '.create.log';
   if (file_exists($log)) {
     $data = file_get_contents($log);
     $messages = explode("\n", $data);
@@ -102,6 +103,9 @@ $app->get('/create/{machine_name}/status', function (Request $request, Response 
       }
     }
   }
+  else {
+    $return['error'] = 'Create process failed.'
+  }
   return $response->withJson($return);
 })->setName('create_status');
 
@@ -114,7 +118,7 @@ $app->get('/install/{machine_name}', function (Request $request, Response $respo
   $return['message'] = 'Starting site installation...';
 
   $cmd = __DIR__ . '/../commands/install.sh ' . $machine_name;
-  $log = $this->get('pantheon')['log_path'] . $machine_name . '.install.txt';
+  $log = $this->get('pantheon')['log_path'] . $machine_name . '.install.log';
 
   $process = new BackgroundProcess($cmd);
   $process->run($log);
@@ -132,7 +136,7 @@ $app->get('/install/{machine_name}/status', function (Request $request, Response
   $return['status'] = 0;
 
   $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
-  $log = $this->get('pantheon')['log_path'] . $machine_name . '.install.txt';
+  $log = $this->get('pantheon')['log_path'] . $machine_name . '.install.log';
   if (file_exists($log)) {
     $data = file_get_contents($log);
     $messages = explode("\n", $data);
@@ -155,11 +159,14 @@ $app->get('/install/{machine_name}/status', function (Request $request, Response
       }
     }
   }
+  else {
+    $return['error'] = 'Installation process failed.'
+  }
   return $response->withJson($return);
 })->setName('install_status');
 
 /**
- * Create site route.
+ * Url site route.
  */
 $app->get('/url/{machine_name}', function (Request $request, Response $response, $args) {
   $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
@@ -173,6 +180,20 @@ $app->get('/url/{machine_name}', function (Request $request, Response $response,
 })->setName('url');
 
 /**
+ * Delete site route.
+ */
+$app->get('/delete/{machine_name}', function (Request $request, Response $response, $args) {
+  $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
+  $return = [];
+
+  $cmd = 'terminus site:delete ' . $machine_name . '.dev -y';
+  $return['message'] = exec($cmd);
+  $return['status'] = $return['message'] ? TRUE : FALSE;
+
+  return $response->withJson($return);
+})->setName('url');
+
+/**
  * TEST
  */
 $app->get('/test/{machine_name}', function (Request $request, Response $response, $args) {
@@ -180,7 +201,7 @@ $app->get('/test/{machine_name}', function (Request $request, Response $response
   $return = [];
 
   $cmd = __DIR__ . '/../commands/test.sh ' . $machine_name;
-  $log = $this->get('pantheon')['log_path'] . $machine_name . '.test.txt';
+  $log = $this->get('pantheon')['log_path'] . $machine_name . '.test.log';
   $process = new BackgroundProcess($cmd);
   $process->run($log);
 

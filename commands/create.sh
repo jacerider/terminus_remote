@@ -1,15 +1,16 @@
 MACHINE_NAME=$1
 LABEL=$2
-ORGANIZATION=$3
+UPSTREAM_ID=$3
+ORGANIZATION=$4
 
 # Script location
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Create log file
-LOG="$DIR/../logs/$MACHINE_NAME.create.log"
+LOG="$DIR/../logs/$MACHINE_NAME.create.bg.log"
 touch $LOG
 
-terminus site:create $MACHINE_NAME "$LABEL" "Drupal 8" --org="$ORGANIZATION" > $LOG 2>&1 &
+terminus site:create $MACHINE_NAME "$LABEL" "$UPSTREAM_ID" --org="$ORGANIZATION" > $LOG 2>&1 &
 PID=$!
 
 # Fired on finish.

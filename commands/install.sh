@@ -4,7 +4,7 @@ MACHINE_NAME=$1
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Create log file
-LOG="$DIR/../logs/$MACHINE_NAME.install.log"
+LOG="$DIR/../logs/$MACHINE_NAME.install.bg.log"
 touch $LOG
 
 terminus drush "$MACHINE_NAME.dev"  -- site-install --site-name="My Sweetness" -y > $LOG 2>&1 &
