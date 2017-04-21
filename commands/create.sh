@@ -12,7 +12,8 @@ touch $LOG
 
 # Create if necessary
 if [ ! -f $LOG ]; then
-  LOG="../logs/$MACHINE_NAME.create.bg.log"
+  echo "[error] Log file could not be created."
+  exit 1
 fi
 
 terminus site:create $MACHINE_NAME "$LABEL" "$UPSTREAM_ID" --org="$ORGANIZATION" > $LOG 2>&1 &
