@@ -26,7 +26,7 @@ PID=$!
 echo "<br>Process ID: $PID"
 
 # Fired on finish.
-function FINISH {
+FINISH() {
   rm $LOG
   kill $PID 2> /dev/null
 }
