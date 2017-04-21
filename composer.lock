@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "034ec1a5e5c18072e725362359390043",
+    "content-hash": "5d0b22e5999c0be8f4385706f880aaba",
     "packages": [
         {
             "name": "cocur/background-process",
@@ -1008,16 +1008,16 @@
         },
         {
             "name": "pantheon-systems/terminus",
-            "version": "1.2.1",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pantheon-systems/terminus.git",
-                "reference": "657e4d16eb20dc1f8dee6c10ac1ab10f1a20b5a3"
+                "reference": "de9af56a1e582c2f3e6c56a037f5f26d9b84d09f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pantheon-systems/terminus/zipball/657e4d16eb20dc1f8dee6c10ac1ab10f1a20b5a3",
-                "reference": "657e4d16eb20dc1f8dee6c10ac1ab10f1a20b5a3",
+                "url": "https://api.github.com/repos/pantheon-systems/terminus/zipball/de9af56a1e582c2f3e6c56a037f5f26d9b84d09f",
+                "reference": "de9af56a1e582c2f3e6c56a037f5f26d9b84d09f",
                 "shasum": ""
             },
             "require": {
@@ -1066,7 +1066,7 @@
                 "terminus",
                 "wordpress"
             ],
-            "time": "2017-04-11T00:37:01+00:00"
+            "time": "2017-04-20T20:19:28+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -2187,16 +2187,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.3.1",
+            "version": "v2.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "437efc435619c8e67acacda37b3984344854142c"
+                "reference": "85e8372c451510165c04bf781295f9d922fa524b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/437efc435619c8e67acacda37b3984344854142c",
-                "reference": "437efc435619c8e67acacda37b3984344854142c",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/85e8372c451510165c04bf781295f9d922fa524b",
+                "reference": "85e8372c451510165c04bf781295f9d922fa524b",
                 "shasum": ""
             },
             "require": {
@@ -2246,7 +2246,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2017-04-18T21:50:11+00:00"
+            "time": "2017-04-21T00:13:02+00:00"
         },
         {
             "name": "webmozart/assert",
