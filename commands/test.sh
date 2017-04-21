@@ -31,13 +31,19 @@ function FINISH {
   kill $PID 2> /dev/null
 }
 
+echo "<br>Pass finish"
+
 # If this script is killed, kill the `cp'.
 trap FINISH 2> /dev/null EXIT;
+
+echo "<br>Pass trap"
 
 # The initial log message
 NOTICE="[notice] Initializing site creation..."
 # The initial background log message.
 NOTICE_BG=""
+
+echo "<br>Start watch"
 
 # Watch for the process to finish.
 while kill -0 $PID 2> /dev/null;
@@ -52,6 +58,8 @@ do
     echo "<br>$NOTICE" | xargs
     sleep 4
 done
+
+echo "<br>End watch"
 
 # Check if last logged message is an error.
 LAST_LOG=$(tail -1 $LOG)
