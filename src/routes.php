@@ -189,6 +189,14 @@ $app->get('/delete/{machine_name}', function (Request $request, Response $respon
   $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
   $return = [];
 
+  // Authenticate
+  $machine_token = $this->get('pantheon')['machine_token'];
+  $cmd = 'terminus auth:login';
+  if ($machine_token) {
+    $cmd .= ' --machine-token=' . $machine_token;
+  }
+  exec($cmd);
+
   $cmd = 'terminus site:delete ' . $machine_name . '.dev -y';
   $return['message'] = exec($cmd);
   $return['status'] = $return['message'] ? TRUE : FALSE;
