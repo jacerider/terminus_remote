@@ -65,4 +65,6 @@ fi
 # Disable the trap on a normal exit.
 trap - EXIT
 
+echo "<br>We are finished."
+
 FINISH
