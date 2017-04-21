@@ -208,6 +208,13 @@ $app->get('/delete/{machine_name}', function (Request $request, Response $respon
  * TEST
  */
 $app->get('/test/{machine_name}', function (Request $request, Response $response, $args) {
+
+  // $result = unserialize(shell_exec('terminus ssh-key:list --format="php"'));
+  // return $result;
+  // return $response->withJson($result);
+  // return $result;
+  // return json_decode($result);
+
   $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
   $return = [];
 
@@ -238,7 +245,8 @@ function authenticate($machine_token) {
   if ($machine_token) {
     $key = __DIR__ . '/../.ssh/id_rsa.pub';
     if (!file_exists($key)) {
-      $existing = json_decode(shell_exec('terminus ssh-key:list --format="json'), TRUE);
+      $existing = unserialize(shell_exec('terminus ssh-key:list --format="php"'));
+      // $existing = json_decode(shell_exec('terminus ssh-key:list --format="json'), TRUE);
       foreach ($existing as $data) {
         if ($data['comment'] == 'terminus-remote') {
           exec('terminus ssh-key:remove ' . $data['id']);
