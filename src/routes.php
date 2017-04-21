@@ -31,11 +31,8 @@ $app->get('/authenticate', function (Request $request, Response $response, $args
   // Authenticate
   $machine_token = $this->get('pantheon')['machine_token'];
 
-  $cmd = 'terminus auth:login';
-  if ($machine_token) {
-    $cmd .= ' --machine-token=' . $machine_token;
-  }
-  exec($cmd);
+  // Authenticate
+  authenticate();
 
   $return['whoami'] = exec('terminus auth:whoami');
   $return['status'] = $return['whoami'] ? TRUE : FALSE;
@@ -58,7 +55,9 @@ $app->post('/create', function (Request $request, Response $response) {
     $organization = filter_var($data['organization'], FILTER_SANITIZE_STRING);
     $upstream_id = filter_var($data['upstream_id'], FILTER_SANITIZE_STRING);
 
-    // $cmd = 'terminus site:create ' . $machine_name . ' "' . $label . '" "Drupal 8" --org="' . $organization . '"';
+    // Authenticate
+    authenticate();
+
     $cmd = __DIR__ . "/../commands/create.bash $machine_name '$label' '$upstream_id' '$organization'";
     $log = $this->get('pantheon')['log_path'] . $machine_name . '.create.log';
     $this->logger->info($cmd);
@@ -119,6 +118,9 @@ $app->get('/install/{machine_name}', function (Request $request, Response $respo
   $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
   $return = [];
   $return['message'] = 'Starting site installation...';
+
+  // Authenticate
+  authenticate();
 
   $cmd = __DIR__ . '/../commands/install.bash ' . $machine_name;
   $log = $this->get('pantheon')['log_path'] . $machine_name . '.install.log';
@@ -190,14 +192,9 @@ $app->get('/delete/{machine_name}', function (Request $request, Response $respon
   $return = [];
 
   // Authenticate
-  $machine_token = $this->get('pantheon')['machine_token'];
-  $cmd = 'terminus auth:login';
-  if ($machine_token) {
-    $cmd .= ' --machine-token=' . $machine_token;
-  }
-  exec($cmd);
+  authenticate();
 
-  $cmd = 'terminus site:delete ' . $machine_name . '.dev -y';
+  $cmd = 'terminus site:delete ' . $machine_name . ' -y';
   $return['message'] = exec($cmd);
   $return['status'] = $return['message'] ? TRUE : FALSE;
 
@@ -212,12 +209,7 @@ $app->get('/test/{machine_name}', function (Request $request, Response $response
   $return = [];
 
   // Authenticate
-  $machine_token = $this->get('pantheon')['machine_token'];
-  $cmd = 'terminus auth:login';
-  if ($machine_token) {
-    $cmd .= ' --machine-token=' . $machine_token;
-  }
-  exec($cmd);
+  authenticate();
 
   $cmd = __DIR__ . '/../commands/test.bash ' . $machine_name;
   $log = $this->get('pantheon')['log_path'] . $machine_name . '.test.log';
@@ -228,6 +220,19 @@ $app->get('/test/{machine_name}', function (Request $request, Response $response
 
   return $response->withJson($return);
 })->setName('url');
+
+/**
+ * Authentication
+ */
+function authenticate() {
+  // Authenticate
+  $machine_token = $this->get('pantheon')['machine_token'];
+  $cmd = 'terminus auth:login';
+  if ($machine_token) {
+    $cmd .= ' --machine-token=' . $machine_token;
+  }
+  return exec($cmd);
+}
 
 /**
  * Find output error.
