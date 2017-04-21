@@ -31,9 +31,9 @@
         "test": "phpunit",
         "compile": [
           "chmod 777 logs/",
-          "chmod u+x commands/test.sh",
-          "chmod u+x commands/create.sh",
-          "chmod u+x commands/install.sh"
+          "chmod u+x commands/test.bash",
+          "chmod u+x commands/create.bash",
+          "chmod u+x commands/install.bash"
         ]
     }
 }
