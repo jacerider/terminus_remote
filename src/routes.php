@@ -210,8 +210,10 @@ $app->get('/test/{machine_name}', function (Request $request, Response $response
 
   $cmd = __DIR__ . '/../commands/test.sh ' . $machine_name;
   $log = $this->get('pantheon')['log_path'] . $machine_name . '.test.log';
-  $process = new BackgroundProcess($cmd);
-  $process->run($log);
+  fopen($log, 'w');
+  return shell_exec($cmd);
+  // $process = new BackgroundProcess($cmd);
+  // $process->run($log);
 
   return $response->withJson($return);
 })->setName('url');
