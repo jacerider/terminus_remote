@@ -233,7 +233,21 @@ function authenticate($machine_token) {
   if ($machine_token) {
     $cmd .= ' --machine-token=' . $machine_token;
   }
-  return exec($cmd);
+  exec($cmd);
+
+  if ($machine_token) {
+    $key = __DIR__ . '/../.ssh/id_rsa.pub';
+    if (!file_exists($key)) {
+      $existing = json_decode(shell_exec('terminus ssh-key:list --format="json'), TRUE);
+      foreach ($existing as $data) {
+        if ($data['comment'] == 'terminus-remote') {
+          exec('terminus ssh-key:remove ' . $data['id']);
+        }
+      }
+      exec('ssh-keygen -t rsa -N "" -C "terminus-remote" -f "/app/.ssh/id_rsa"');
+      exec('terminus ssh-key:add "/app/.ssh/id_rsa.pub"');
+    }
+  }
 }
 
 /**

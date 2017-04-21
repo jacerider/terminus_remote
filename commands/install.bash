@@ -15,7 +15,7 @@ if [ ! -f $LOG ]; then
   exit 1
 fi
 
-terminus drush "$MACHINE_NAME.dev"  -- site-install --site-name="My Sweetness" -y > $LOG 2>&1 &
+terminus drush "$MACHINE_NAME.dev"  -- site-install --site-name="Your Site" -y > $LOG 2>&1 &
 PID=$!
 
 # Fired on finish.
