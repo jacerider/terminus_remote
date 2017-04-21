@@ -34,6 +34,7 @@ $app->get('/authenticate', function (Request $request, Response $response, $args
   // Authenticate
   authenticate($this->get('pantheon')['machine_token']);
 
+  $return['message'] = '<h2>Initializing...</h2><p><em>Authenticating and validating request.</em></p>';
   $return['whoami'] = exec('terminus auth:whoami');
   $return['status'] = $return['whoami'] ? TRUE : FALSE;
 
@@ -152,6 +153,8 @@ $app->get('/install/{machine_name}/status', function (Request $request, Response
       $return['error'] = messageFind($messages);
       $return['data'] = $data;
       if ($return['error']) {
+        $bglog = $this->get('pantheon')['log_path'] . $machine_name . '.install.bg.log';
+        $return['log'] = file_get_contents($bglog);
         // unlink($log);
       }
       else {
