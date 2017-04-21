@@ -104,7 +104,7 @@ $app->get('/create/{machine_name}/status', function (Request $request, Response 
     }
   }
   else {
-    $return['error'] = 'Create process failed.'
+    $return['error'] = 'Create process failed.';
   }
   return $response->withJson($return);
 })->setName('create_status');
@@ -160,7 +160,7 @@ $app->get('/install/{machine_name}/status', function (Request $request, Response
     }
   }
   else {
-    $return['error'] = 'Installation process failed.'
+    $return['error'] = 'Installation process failed.';
   }
   return $response->withJson($return);
 })->setName('install_status');
