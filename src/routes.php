@@ -32,7 +32,7 @@ $app->get('/authenticate', function (Request $request, Response $response, $args
   $machine_token = $this->get('pantheon')['machine_token'];
 
   // Authenticate
-  authenticate();
+  authenticate($this->get('pantheon')['machine_token']);
 
   $return['whoami'] = exec('terminus auth:whoami');
   $return['status'] = $return['whoami'] ? TRUE : FALSE;
@@ -56,7 +56,7 @@ $app->post('/create', function (Request $request, Response $response) {
     $upstream_id = filter_var($data['upstream_id'], FILTER_SANITIZE_STRING);
 
     // Authenticate
-    authenticate();
+    authenticate($this->get('pantheon')['machine_token']);
 
     $cmd = __DIR__ . "/../commands/create.bash $machine_name '$label' '$upstream_id' '$organization'";
     $log = $this->get('pantheon')['log_path'] . $machine_name . '.create.log';
@@ -120,7 +120,7 @@ $app->get('/install/{machine_name}', function (Request $request, Response $respo
   $return['message'] = 'Starting site installation...';
 
   // Authenticate
-  authenticate();
+  authenticate($this->get('pantheon')['machine_token']);
 
   $cmd = __DIR__ . '/../commands/install.bash ' . $machine_name;
   $log = $this->get('pantheon')['log_path'] . $machine_name . '.install.log';
@@ -192,7 +192,7 @@ $app->get('/delete/{machine_name}', function (Request $request, Response $respon
   $return = [];
 
   // Authenticate
-  authenticate();
+  authenticate($this->get('pantheon')['machine_token']);
 
   $cmd = 'terminus site:delete ' . $machine_name . ' -y';
   $return['message'] = exec($cmd);
@@ -209,7 +209,7 @@ $app->get('/test/{machine_name}', function (Request $request, Response $response
   $return = [];
 
   // Authenticate
-  authenticate();
+  authenticate($this->get('pantheon')['machine_token']);
 
   $cmd = __DIR__ . '/../commands/test.bash ' . $machine_name;
   $log = $this->get('pantheon')['log_path'] . $machine_name . '.test.log';
@@ -224,9 +224,8 @@ $app->get('/test/{machine_name}', function (Request $request, Response $response
 /**
  * Authentication
  */
-function authenticate() {
+function authenticate($machine_token) {
   // Authenticate
-  $machine_token = $this->get('pantheon')['machine_token'];
   $cmd = 'terminus auth:login';
   if ($machine_token) {
     $cmd .= ' --machine-token=' . $machine_token;
