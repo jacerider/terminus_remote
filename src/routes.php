@@ -201,6 +201,7 @@ $app->get('/test/{machine_name}', function (Request $request, Response $response
   $return = [];
 
   $cmd = __DIR__ . '/../commands/test.sh ' . $machine_name;
+  return shell_exec($cmd);
   $log = $this->get('pantheon')['log_path'] . $machine_name . '.test.log';
   $process = new BackgroundProcess($cmd);
   $process->run($log);

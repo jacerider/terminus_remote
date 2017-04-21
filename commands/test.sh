@@ -1,7 +1,24 @@
 MACHINE_NAME=$1
 
+# Script location
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # Create log file
-LOG="../logs/$MACHINE_NAME.test.log"
+LOG="$DIR/../logs/$MACHINE_NAME.create.bg.log"
+
+echo "Log location: $LOG"
+touch $LOG
+
+# Create if necessary
+if [ ! -f $LOG ]; then
+  echo "<br>Log file does not exist!"
+fi
+
+terminus aliases
+
+rm $LOG
+exit 1
+
 touch $LOG
 
 # terminus drush "$1.dev"  -- site-install --site-name="My Sweetness" -y -v
