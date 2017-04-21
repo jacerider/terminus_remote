@@ -59,7 +59,7 @@ $app->post('/create', function (Request $request, Response $response) {
     $upstream_id = filter_var($data['upstream_id'], FILTER_SANITIZE_STRING);
 
     // $cmd = 'terminus site:create ' . $machine_name . ' "' . $label . '" "Drupal 8" --org="' . $organization . '"';
-    $cmd = __DIR__ . "/../commands/create.sh $machine_name '$label' '$upstream_id' '$organization'";
+    $cmd = __DIR__ . "/../commands/create.bash $machine_name '$label' '$upstream_id' '$organization'";
     $log = $this->get('pantheon')['log_path'] . $machine_name . '.create.log';
     $this->logger->info($cmd);
 
@@ -120,7 +120,7 @@ $app->get('/install/{machine_name}', function (Request $request, Response $respo
   $return = [];
   $return['message'] = 'Starting site installation...';
 
-  $cmd = __DIR__ . '/../commands/install.sh ' . $machine_name;
+  $cmd = __DIR__ . '/../commands/install.bash ' . $machine_name;
   $log = $this->get('pantheon')['log_path'] . $machine_name . '.install.log';
 
   $process = new BackgroundProcess($cmd);
@@ -211,7 +211,7 @@ $app->get('/test/{machine_name}', function (Request $request, Response $response
   }
   exec($cmd);
 
-  $cmd = __DIR__ . '/../commands/test.sh ' . $machine_name;
+  $cmd = __DIR__ . '/../commands/test.bash ' . $machine_name;
   $log = $this->get('pantheon')['log_path'] . $machine_name . '.test.log';
   fopen($log, 'w');
   return shell_exec($cmd);
