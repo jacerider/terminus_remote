@@ -20,8 +20,10 @@ else
   echo "<br>[notice] Log file created."
 fi
 
-terminus site:create $MACHINE_NAME "$LABEL" "$UPSTREAM_ID" --org="$ORGANIZATION" 2>&1 $LOG &
+terminus site:create $MACHINE_NAME "$LABEL" "$UPSTREAM_ID" --org="$ORGANIZATION" > $LOG 2>&1 &
 PID=$!
+
+echo "<br>Process ID: $PID"
 
 # Fired on finish.
 function FINISH {
