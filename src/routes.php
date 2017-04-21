@@ -58,8 +58,9 @@ $app->post('/create', function (Request $request, Response $response) {
     $label = filter_var($data['label'], FILTER_SANITIZE_STRING);
     $organization = filter_var($data['organization'], FILTER_SANITIZE_STRING);
 
-    $cmd = 'terminus site:create ' . $machine_name . ' "' . $label . '" "Drupal 8" --org="' . $organization . '"';
-    $log = $this->get('pantheon')['log_path'] . $machine_name . '.txt';
+    // $cmd = 'terminus site:create ' . $machine_name . ' "' . $label . '" "Drupal 8" --org="' . $organization . '"';
+    $cmd = __DIR__ . "/../commands/create.sh $machine_name '$label' '$organization'";
+    $log = $this->get('pantheon')['log_path'] . $machine_name . '.create.txt';
     $this->logger->info($cmd);
 
     $process = new BackgroundProcess($cmd);
@@ -79,24 +80,24 @@ $app->get('/create/{machine_name}/status', function (Request $request, Response 
   $return['status'] = 0;
 
   $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
-  $log = $this->get('pantheon')['log_path'] . $machine_name . '.txt';
+  $log = $this->get('pantheon')['log_path'] . $machine_name . '.create.txt';
   if (file_exists($log)) {
     $data = file_get_contents($log);
     $messages = explode("\n", $data);
     if (!empty($data)) {
       $message = messageFind($messages, '[notice]');
-      $return['message'] = '<h2>' . $message . '</h2><p><em>So much is happening behind this white background...</em></p>';
+      $return['message'] = '<h2>' . $message . '</h2><p><em>So much is happening behind this white background... we could show you... <strong>but we would have to kill you.</strong></em></p>';
       $return['error'] = messageFind($messages);
       $return['data'] = $data;
       if ($return['error']) {
-        unlink($log);
+        // unlink($log);
       }
       else {
-        $success = messageFind($messages, '[notice] Deployed');
+        $success = messageFind($messages, '[success]');
         if ($success) {
           $return['message'] = $success;
           $return['status'] = 1;
-          unlink($log);
+          // unlink($log);
         }
       }
     }
@@ -112,7 +113,7 @@ $app->get('/install/{machine_name}', function (Request $request, Response $respo
   $return = [];
   $return['message'] = 'Starting site installation...';
 
-  $cmd = 'terminus drush "' . $machine_name . '.dev"  -- site-install --site-name="My Sweetness" -y -v';
+  $cmd = __DIR__ . '/../commands/install.sh ' . $machine_name;
   $log = $this->get('pantheon')['log_path'] . $machine_name . '.install.txt';
 
   $process = new BackgroundProcess($cmd);
@@ -135,15 +136,17 @@ $app->get('/install/{machine_name}/status', function (Request $request, Response
   if (file_exists($log)) {
     $data = file_get_contents($log);
     $messages = explode("\n", $data);
-    $return['message'] = '<h2>Installing your site...</h2><p><em>So much is happening behind this white background...</em></p>';
+    $return['message'] = '<h2>Installing your site...</h2><p><em>So much is happening behind this white background... <strong>keep waiting</strong></em></p>';
     if (!empty($data)) {
+      $message = messageFind($messages, '[notice]');
+      $return['message'] = '<h2>' . $message . '</h2><p><em>So much is happening behind this white background... <strong>keep waiting</strong></em></p>';
       $return['error'] = messageFind($messages);
       $return['data'] = $data;
       if ($return['error']) {
         // unlink($log);
       }
       else {
-        $success = messageFind($messages, 'Installation complete');
+        $success = messageFind($messages, '[success]');
         if ($success) {
           $return['message'] = $success;
           $return['status'] = 1;
@@ -176,9 +179,10 @@ $app->get('/test/{machine_name}', function (Request $request, Response $response
   $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
   $return = [];
 
-  $cmd = __DIR__ . '/../commands/test.sh';
-  return shell_exec($cmd);
-  $return['status'] = $return['url'] ? TRUE : FALSE;
+  $cmd = __DIR__ . '/../commands/test.sh ' . $machine_name;
+  $log = $this->get('pantheon')['log_path'] . $machine_name . '.test.txt';
+  $process = new BackgroundProcess($cmd);
+  $process->run($log);
 
   return $response->withJson($return);
 })->setName('url');
@@ -190,8 +194,9 @@ function messageFind($return, $find = '[error]') {
   $results = [];
   foreach ($return as $message) {
     $message = trim($message);
-    if (strtolower(substr($message, 0, strlen($find))) === strtolower($find)) {
-      $results[] = trim(substr($message, strlen($find)));
+    if (strtolower(substr($message, 0, strlen($find))) == strtolower($find)) {
+      $found = trim(substr($message, strlen($find)));
+      $results[] = !empty($found) ? $found : $message;
     }
   }
   return !empty($results) ? end($results) : NULL;
