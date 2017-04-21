@@ -152,9 +152,9 @@ $app->get('/install/{machine_name}/status', function (Request $request, Response
       $return['message'] = '<h2>' . $message . '</h2><p><em>So much is happening behind this white background... <strong>keep waiting</strong></em></p>';
       $return['error'] = messageFind($messages);
       $return['data'] = $data;
+      $bglog = $this->get('pantheon')['log_path'] . $machine_name . '.install.bg.log';
+      $return['log'] = file_get_contents($bglog);
       if ($return['error']) {
-        $bglog = $this->get('pantheon')['log_path'] . $machine_name . '.install.bg.log';
-        $return['log'] = file_get_contents($bglog);
         // unlink($log);
       }
       else {
