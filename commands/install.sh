@@ -17,7 +17,7 @@ terminus drush "$MACHINE_NAME.dev"  -- site-install --site-name="My Sweetness" -
 PID=$!
 
 # Fired on finish.
-function FINISH {
+FINISH() {
   rm $LOG
   kill $PID 2> /dev/null
 }

@@ -20,7 +20,7 @@ terminus site:create $MACHINE_NAME "$LABEL" "$UPSTREAM_ID" --org="$ORGANIZATION"
 PID=$!
 
 # Fired on finish.
-function FINISH {
+FINISH() {
   rm $LOG
   kill $PID 2> /dev/null
 }
