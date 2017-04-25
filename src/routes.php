@@ -29,9 +29,6 @@ $app->get('/authenticate', function (Request $request, Response $response, $args
   $return = [];
 
   // Authenticate
-  $machine_token = $this->get('pantheon')['machine_token'];
-
-  // Authenticate
   authenticate($this->get('pantheon')['machine_token']);
 
   $return['message'] = '<h2>Initializing...</h2><p><em>Authenticating and validating request.</em></p>';
@@ -188,6 +185,20 @@ $app->get('/url/{machine_name}', function (Request $request, Response $response,
 })->setName('url');
 
 /**
+ * Login site route.
+ */
+$app->get('/login/{machine_name}', function (Request $request, Response $response, $args) {
+  $machine_name = filter_var($args['machine_name'], FILTER_SANITIZE_STRING);
+  $return = [];
+
+  $cmd = 'terminus drush "' . $machine_name . '" -- user-login 1';
+  $return['url'] = exec($cmd);
+  $return['status'] = $return['url'] ? TRUE : FALSE;
+
+  return $response->withJson($return);
+})->setName('url');
+
+/**
  * Delete site route.
  */
 $app->get('/delete/{machine_name}', function (Request $request, Response $response, $args) {
@@ -197,9 +208,13 @@ $app->get('/delete/{machine_name}', function (Request $request, Response $respon
   // Authenticate
   authenticate($this->get('pantheon')['machine_token']);
 
-  $cmd = 'terminus site:delete ' . $machine_name . ' -y';
-  $return['message'] = exec($cmd);
-  $return['status'] = $return['message'] ? TRUE : FALSE;
+  $cmd = __DIR__ . '/../commands/delete.bash ' . $machine_name;
+
+  $data = shell_exec($cmd);
+  $messages = explode("\n", $data);
+  $return['message'] = messageFind($messages, '[success]');
+  $return['error'] = messageFind($messages);
+  $return['status'] = $return['error'] ? FALSE : TRUE;
 
   return $response->withJson($return);
 })->setName('url');

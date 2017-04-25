@@ -6,7 +6,7 @@ MACHINE_NAME=$1
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Create log file
-LOG="$DIR/../logs/$MACHINE_NAME.install.bg.log"
+LOG="$DIR/../logs/$MACHINE_NAME.delete.bg.log"
 touch $LOG
 
 # Create if necessary
@@ -15,7 +15,7 @@ if [ ! -f $LOG ]; then
   exit 1
 fi
 
-terminus drush "$MACHINE_NAME.dev" -- site-install --site-name="Your Site" -y > $LOG 2>&1 &
+terminus site:delete $MACHINE_NAME -y > $LOG 2>&1 &
 PID=$!
 
 # Fired on finish.
@@ -28,7 +28,7 @@ FINISH() {
 trap FINISH 2> /dev/null EXIT;
 
 # The initial log message
-NOTICE="[notice] Installing site..."
+NOTICE="[notice] Deleting site..."
 # The initial background log message.
 NOTICE_BG=""
 
@@ -52,7 +52,7 @@ if [[ $LAST_LOG == *\[error\]* ]]
 then
   echo "$LAST_LOG" | xargs
 else
-  echo "[success] Site installation complete!"
+  echo "[success] Site deletion complete!"
 fi
 
 # Disable the trap on a normal exit.
